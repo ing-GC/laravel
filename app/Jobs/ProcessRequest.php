@@ -32,18 +32,12 @@ class ProcessRequest implements ShouldQueue
      */
     public function handle()
     {
-        // Al crear la peticion dentro de un job, nos permite realizar un retry 
-        // para intentar una o más veces el post, con esto se garantiza una mayor
-        // probabilidad de que se ejecute de manera exitosa.
-        $response = Http::post('https://atomic.incfile.com/fakepost');
-
-
-        // Al utilizar la función onError garantizamos que la petición que haya fallado
+        // Al utilizar la función throw garantizamos que la petición que haya fallado
         // se guarde en la tabla de failed_jobs, con esto podemos repetir dicho request fallido
         // y saber el motivo del fallo
-        $response->onError(function () use ($response) {
-            $this->fail();
-            Log::error($response->body());
+        return rescue(function () {
+            return Http::post('https://atomic.incfile.com/fakepost')
+                ->throw(fn () => $this->fail());
         });
     }
 }

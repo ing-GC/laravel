@@ -42,6 +42,9 @@ class PostInterview extends Command
 
         try {
             for ($i = 1; $i <= $count; $i++) {
+                // Al crear la peticion dentro de un job, nos permite realizar un retry 
+                // para intentar una o más veces el post, con esto se garantiza una mayor
+                // probabilidad de que se ejecute de manera exitosa.
                 ProcessRequest::dispatch();
                 $this->info("Processing {$i} of {$count} requests to queue");
             }
